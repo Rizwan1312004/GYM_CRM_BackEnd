@@ -25,8 +25,11 @@ SECRET_KEY = 'django-insecure-a52+cao#(^h-5n3l6js^6^-e#v3p7#jt2$r_(utx3c8op7jvuu
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
-
+ALLOWED_HOSTS = [
+    'gym-crm-backend-1-es0x.onrender.com', 
+    'localhost', 
+    '127.0.0.1'
+]
 
 # Application definition
 

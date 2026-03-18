@@ -212,6 +212,23 @@ class RegisterSerializer(serializers.ModelSerializer):
         return user
 
 
+class UserSerializer(serializers.ModelSerializer):
+    """Serializer for admin-level management of CustomUser accounts."""
+    password = serializers.CharField(write_only=True, required=False, allow_blank=True)
+
+    class Meta:
+        model = CustomUser
+        fields = ['id', 'username', 'first_name', 'last_name', 'email', 'role', 'phone_number', 'is_active', 'password']
+
+    def update(self, instance, validated_data):
+        password = validated_data.pop('password', None)
+        instance = super().update(instance, validated_data)
+        if password:
+            instance.set_password(password)
+            instance.save()
+        return instance
+
+
 class MembershipPlanViewSet(viewsets.ModelViewSet):
     serializer_class = MembershipPlanSerializer
     

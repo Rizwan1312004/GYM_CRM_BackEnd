@@ -11,3 +11,17 @@ class IsAdminOrReadOnly(permissions.BasePermission):
             return True
 
         return bool(request.user and request.user.is_authenticated and request.user.role == 'admin')
+
+
+class IsAdminRole(permissions.BasePermission):
+    """
+    Allows access ONLY to users with role='admin'.
+    Blocks all methods (including safe reads) for non-admins.
+    """
+
+    def has_permission(self, request, view):
+        return bool(
+            request.user
+            and request.user.is_authenticated
+            and request.user.role == 'admin'
+        )

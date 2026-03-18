@@ -3,9 +3,9 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from django.db.models import Q
 from .models import MembershipPlan, Member, Subscription, Service, Attendance, Activity, Trainer, CustomUser
-from .serializers import MembershipPlanSerializer, MemberSerializer, SubscriptionSerializer, ServiceSerializer, AttendanceSerializer, ActivitySerializer, TrainerSerializer, RegisterSerializer
+from .serializers import MembershipPlanSerializer, MemberSerializer, SubscriptionSerializer, ServiceSerializer, AttendanceSerializer, ActivitySerializer, TrainerSerializer, RegisterSerializer, UserSerializer
 from rest_framework import permissions
-from .permissions import IsAdminOrReadOnly
+from .permissions import IsAdminOrReadOnly, IsAdminRole
 
 class TrainerListAPIView(generics.ListCreateAPIView):
     permission_classes = [permissions.IsAuthenticated, IsAdminOrReadOnly]
@@ -125,3 +125,30 @@ class RegisterView(generics.CreateAPIView):
     queryset = CustomUser.objects.all()
     permission_classes = (permissions.AllowAny,)
     serializer_class = RegisterSerializer
+
+
+class UserListAPIView(generics.ListAPIView):
+    """Admin-only: list all registered users."""
+    permission_classes = [IsAdminRole]
+    serializer_class = UserSerializer
+
+    def get_queryset(self):
+        queryset = CustomUser.objects.all().order_by('id')
+        search = self.request.query_params.get('search', '')
+        if search:
+            queryset = queryset.filter(
+                Q(username__icontains=search) |
+                Q(first_name__icontains=search) |
+                Q(last_name__icontains=search) |
+                Q(email__icontains=search) |
+                Q(role__icontains=search)
+            ).distinct()
+        return queryset
+
+
+class UserDetailAPIView(generics.RetrieveUpdateDestroyAPIView):
+    """Admin-only: retrieve, update, or delete a user."""
+    permission_classes = [IsAdminRole]
+    queryset = CustomUser.objects.all()
+    serializer_class = UserSerializer
+    http_method_names = ['get', 'patch', 'delete', 'head', 'options']

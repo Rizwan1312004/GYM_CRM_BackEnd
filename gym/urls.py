@@ -34,4 +34,8 @@ urlpatterns = [
     # Activities
     path('api/activities/', views.ActivityListCreateAPIView.as_view(), name='activity-list'),
     path('api/activities/<int:pk>/', views.ActivityDetailAPIView.as_view(), name='activity-detail'),
+
+    # Users (admin only)
+    path('api/users/', views.UserListAPIView.as_view(), name='user-list'),
+    path('api/users/<int:pk>/', views.UserDetailAPIView.as_view(), name='user-detail'),
 ]
